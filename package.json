@@ -1,0 +1,22 @@
+{
+  "name": "rajanghimire-com",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "description": "Portfolio of Rajan Ghimire — ML Engineer & AI Systems Builder",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/clean.mjs && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "framer-motion": "^12.23.12",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.2",
+    "vite": "^7.1.5"
+  }
+}
