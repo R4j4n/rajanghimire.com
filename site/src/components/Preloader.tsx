@@ -2,14 +2,21 @@ import { useEffect, useState } from "react"
 import Wireframe from "../effects/Wireframe"
 import { meta } from "../data"
 
-const DURATION = 1400
+/** How long the curtain holds. The one knob for the whole intro. */
+const DURATION = 2200
+
+/** Tail after the last stroke, so the drawing is finished before it lifts. */
+const SETTLE = 400
 
 /**
- * Counts 000 → 100 while the fonts settle, then lifts off the top of the
- * screen. Capped at ~1.5s so it never becomes the slow part of the load.
+ * Counts 000 → 100, then lifts off the top of the screen.
  *
  * The portrait draws itself against the same clock, so the counter is not just
- * a number next to an animation — it is the progress of the drawing.
+ * a number next to an animation — it is the progress of the drawing. Both are
+ * measured from mount, which is why the drawing gets DURATION minus a settling
+ * tail rather than a time of its own: the two cannot drift apart.
+ *
+ * This is longer than a load cover needs to be. It is paced to be watched.
  */
 export default function Preloader({ onDone }: { onDone: () => void }) {
     const [value, setValue] = useState(0)
@@ -49,10 +56,10 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
             <div className="preload-art">
                 {!gone ? (
                     <Wireframe
-                        draw={`${DURATION - 300}ms`}
+                        draw={`${DURATION - SETTLE}ms`}
                         delay="60ms"
                         lead="0s"
-                        ghostIn="350ms"
+                        ghostIn="500ms"
                     />
                 ) : null}
             </div>

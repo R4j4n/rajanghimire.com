@@ -40,7 +40,7 @@ export const hero = {
         "LLM Engineer",
     ],
     description:
-        "I build AI-powered software — LLM agents, NLP and vision models, and the pipelines and services that carry them from a notebook into something people actually use.",
+        "I build AI-powered software. LLM agents, NLP and vision models, and the pipelines and services that carry them from a notebook into something people actually use.",
 }
 
 export const stats = [
@@ -53,7 +53,7 @@ export const stats = [
 export const about = {
     lead: "I build models, then the software that keeps them alive.",
     body: [
-        "Half of my work is research-shaped — fine-tuning transformers, quantizing segmentation models, teaching an LLM to write its own SQL, annotating a corpus by hand because nobody else was going to.",
+        "Half of my work is research-shaped. Fine-tuning transformers, quantizing segmentation models, teaching an LLM to write its own SQL, annotating a corpus by hand because nobody else was going to.",
         "The other half is production software: FastAPI services, agent orchestration, scheduled data pipelines and the web control panels people drive them from. An AI phone agent that answers on the first ring is only interesting once it holds up against live booking data at two in the afternoon.",
     ],
     globeWord: "machine learning · nlp · llm agents · systems · ",
