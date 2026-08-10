@@ -17,22 +17,14 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npm run build
 
-      - name: Locate build output
-        id: out
+      - name: Build
+        run: npx vite build --outDir "$GITHUB_WORKSPACE/dist" --emptyOutDir
+
+      - name: Verify build output
         run: |
-          echo "--- repo root after build ---"
-          ls -la
-          for d in dist docs build public/dist .output/public; do
-            if [ -d "$d" ] && [ -f "$d/index.html" ]; then
-              echo "dir=$d" >> "$GITHUB_OUTPUT"
-              echo "Using build output: $d"
-              exit 0
-            fi
-          done
-          echo "ERROR: no folder containing index.html was found."
-          exit 1
+          ls -la dist
+          test -f dist/index.html
 
       - name: Configure SSH
         run: |
@@ -45,5 +37,4 @@ jobs:
         run: |
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/id_ed25519" \
-            "${{ steps.out.outputs.dir }}/" \
-            root@187.77.24.185:/var/www/rajanghimire.com/
+            dist/ root@187.77.24.185:/var/www/rajanghimire.com/
