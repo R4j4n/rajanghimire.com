@@ -38,3 +38,4 @@ jobs:
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/id_ed25519" \
             dist/ root@187.77.24.185:/var/www/rajanghimire.com/
+            
