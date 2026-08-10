@@ -37,7 +37,7 @@ export const hero = {
         "AI Systems Builder",
         "NLP Specialist",
         "Backend Engineer",
-        "LLM Hacker",
+        "LLM Engineer",
     ],
     description:
         "I build AI-powered software — LLM agents, NLP and vision models, and the pipelines and services that carry them from a notebook into something people actually use.",

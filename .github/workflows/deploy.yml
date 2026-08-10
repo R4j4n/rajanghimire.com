@@ -19,12 +19,14 @@ jobs:
       - run: npm ci
 
       - name: Build
-        run: npx vite build --outDir "$GITHUB_WORKSPACE/dist" --emptyOutDir
+        run: npm run build
 
       - name: Verify build output
         run: |
           ls -la dist
           test -f dist/index.html
+          test -f dist/Resume_2026.pdf
+          test -f dist/img/hero.png
 
       - name: Configure SSH
         run: |

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import ReactiveLines from "../effects/ReactiveLines"
 import DustTextReveal from "../effects/DustTextReveal"
 import Typewriter from "../effects/Typewriter"
+import Wireframe from "../effects/Wireframe"
 import { Arrow, Reveal, useElementWidth, useFittedFontSize } from "../components/common"
 import { hero, meta } from "../data"
 
@@ -31,6 +32,14 @@ export default function Hero({ started }: { started: boolean }) {
         <section className="hero" id="top">
             <div className="hero-canvas">
                 <ReactiveLines />
+            </div>
+
+            {/* Sits between the line field and the type — masked back at the
+                top and bottom so it never argues with the name. Held until the
+                curtain is out of the way, and drawn slowly: this is ambient,
+                the dust reveal is the event. */}
+            <div className="hero-portrait" aria-hidden="true">
+                <Wireframe draw="11s" delay="0.6s" lead="0.4s" flat replay play={started} />
             </div>
 
             <div className="shell">

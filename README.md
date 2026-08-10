@@ -16,21 +16,30 @@ site/                 source (Vite root)
     sections/         Hero, About, Work, Stack, Projects, Research, Contact
     effects/          the seven canvas/WebGL components
 
+img/, Resume_2026.pdf static files the document shell links to
+dist/                 BUILD OUTPUT — the deployable site (git-ignored)
 index.html            BUILD OUTPUT — do not edit by hand
 assets/               BUILD OUTPUT
 ```
 
-The repo doubles as the GitHub Pages document root, so `npm run build`
-writes `index.html` and `assets/` back to the repo root. Commit those
-along with your source changes and Pages serves the new build.
+`npm run build` typechecks, builds into `dist/`, copies the static files
+in beside it, then publishes `index.html` + `assets/` back to the repo
+root. Two consumers, one build:
+
+- the VPS deploy (`.github/workflows/deploy.yml`) rsyncs `dist/`, which
+  is why the static files have to be copied into it — `publicDir` is off
+  and rsync runs with `--delete`;
+- the repo also doubles as the GitHub Pages document root, so commit the
+  root `index.html` and `assets/` along with your source changes.
 
 ## Commands
 
 ```bash
 npm install
-npm run dev      # local dev server with HMR
-npm run build    # clears assets/, rebuilds into the repo root
-npm run preview  # serve the built output
+npm run dev        # local dev server with HMR
+npm run typecheck  # tsc --noEmit
+npm run build      # typecheck, build to dist/, publish to the repo root
+npm run preview    # serve the built output
 ```
 
 ## The effects

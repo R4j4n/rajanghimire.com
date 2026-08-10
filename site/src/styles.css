@@ -228,6 +228,141 @@ canvas {
     z-index: 1;
 }
 
+/* ── Wireframe portrait ───────────────────────────────────────
+   The line-art self-portrait, drawn stroke by stroke. Geometry lives in
+   effects/wireframePaths.ts; the whole animation is here.
+
+   Each stroke is one dash exactly as long as itself (pathLength="1"
+   normalises that), unrolled to zero. Every path carries its own --d and --t
+   as fractions of the timeline, so multiplying them by --wf-draw sequences all
+   140 strokes off a single duration. The fractions come from true arc length
+   and the strokes run longest-first, which is what makes it read as somebody
+   drawing rather than everything arriving at once.
+   ────────────────────────────────────────────────────────────── */
+
+.wf {
+    --wf-draw: 12s; /* whole drawing */
+    --wf-delay: 0s; /* beat before the first stroke */
+    --wf-lead: 0.6s; /* gap between the ghost and the first stroke */
+    --wf-ghost-in: 1.1s;
+    --wf-ink: var(--fg);
+    --wf-ghost: rgba(255, 255, 255, 0.16);
+    --wf-pen: #ffffff;
+    --wf-width: 1.4px;
+    --wf-glow: 7px;
+
+    display: block;
+    margin: 0;
+    line-height: 0;
+}
+
+.wf svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.wf path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: var(--wf-width);
+    vector-effect: non-scaling-stroke; /* weight holds at any size */
+}
+
+/* Faint complete drawing, so the shape is hinted before it is drawn. */
+.wf .wf-ghost {
+    opacity: 0;
+    animation: wf-ghost-in var(--wf-ghost-in) ease-out var(--wf-delay) forwards;
+}
+
+.wf .wf-ghost path {
+    stroke: var(--wf-ghost);
+}
+
+/* One filter on each group rather than 140 on the paths. */
+.wf .wf-ink {
+    filter: drop-shadow(0 0 var(--wf-glow) color-mix(in srgb, var(--wf-ink) 45%, transparent));
+}
+
+.wf .wf-pen {
+    filter: drop-shadow(0 0 5px var(--wf-pen));
+}
+
+/* Next to another running animation the glow is not worth the raster cost. */
+.wf-flat .wf-ink,
+.wf-flat .wf-pen {
+    filter: none;
+}
+
+.wf .wf-ink path {
+    stroke: var(--wf-ink);
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: wf-draw calc(var(--wf-draw) * var(--t)) linear
+        calc(var(--wf-delay) + var(--wf-lead) + var(--wf-draw) * var(--d)) forwards;
+}
+
+/* A short bright dash riding the same path is the pen tip. The missing
+   animation-fill-mode is deliberate: outside its own window the path falls
+   back to opacity 0 and the tip disappears. */
+.wf .wf-pen path {
+    stroke: var(--wf-pen);
+    stroke-width: calc(var(--wf-width) + 1.4px);
+    stroke-dasharray: 0.02 0.98;
+    opacity: 0;
+    animation: wf-pen calc(var(--wf-draw) * var(--t)) linear
+        calc(var(--wf-delay) + var(--wf-lead) + var(--wf-draw) * var(--d));
+}
+
+@keyframes wf-draw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes wf-ghost-in {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes wf-pen {
+    from {
+        opacity: 1;
+        stroke-dashoffset: 0.02;
+    }
+    to {
+        opacity: 1;
+        stroke-dashoffset: -0.98;
+    }
+}
+
+/* Parked: either the caller has not released it yet, or it has scrolled out
+   of view and is waiting to redraw. */
+.wf.wf-idle .wf-ghost,
+.wf.wf-idle .wf-ink path,
+.wf.wf-idle .wf-pen path {
+    animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wf .wf-ghost,
+    .wf.wf-idle .wf-ghost {
+        animation: none;
+        opacity: 1;
+    }
+    .wf .wf-ink path,
+    .wf.wf-idle .wf-ink path {
+        animation: none;
+        stroke-dashoffset: 0;
+    }
+    .wf .wf-pen {
+        display: none;
+    }
+}
+
 /* ── Preloader ────────────────────────────────────────────── */
 
 .preload {
@@ -245,6 +380,20 @@ canvas {
 .preload.is-done {
     transform: translateY(-101%);
     pointer-events: none;
+}
+
+/* Fills whatever is left above the name/counter row. The svg's
+   preserveAspectRatio does the fitting, so the box can be any shape. */
+.preload-art {
+    flex: 1;
+    min-height: 0;
+    padding-bottom: clamp(18px, 4vh, 46px);
+}
+
+.preload-art .wf {
+    height: 100%;
+    --wf-width: 1.3px;
+    --wf-glow: 5px;
 }
 
 .preload-row {
@@ -511,6 +660,37 @@ canvas {
     position: absolute;
     inset: 0;
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.2) 42%, rgba(0, 0, 0, 0.9) 100%);
+}
+
+/* Same stacking level as the line field, but later in the DOM, so it paints
+   over the darkening gradient and under the type. */
+.hero-portrait {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    bottom: 0;
+    right: clamp(0px, 1.5vw, 32px);
+    width: min(44vw, 600px);
+    pointer-events: none;
+    opacity: 0.42;
+    /* Dissolve top and bottom: the nav crosses the head, the name and the
+       links cross the shoulders. */
+    mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 60%, transparent 93%);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 60%, transparent 93%);
+}
+
+.hero-portrait .wf {
+    height: 100%;
+    --wf-ghost: rgba(255, 255, 255, 0.1);
+    --wf-width: 1.1px;
+}
+
+/* Below this the name owns the full measure and the drawing would sit
+   underneath it rather than beside it. */
+@media (max-width: 1000px) {
+    .hero-portrait {
+        display: none;
+    }
 }
 
 .hero-eyebrow {
